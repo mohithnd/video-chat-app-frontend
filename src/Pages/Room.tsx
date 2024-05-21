@@ -20,14 +20,18 @@ const Room: React.FC = () => {
       <br />
       Your Own User Feed
       <UserFeedPlayer stream={stream} />
-      <div>
-        Other Users Feed
-        {Object.keys(peers).map((peerId) => (
-          <>
-            <UserFeedPlayer key={peerId} stream={peers[peerId].stream} />
-          </>
-        ))}
-      </div>
+      {Object.keys(peers).length > 0 ? (
+        <div>
+          Other Users Feed
+          {Object.keys(peers).map((peerId) => (
+            <div key={peerId}>
+              <UserFeedPlayer stream={peers[peerId].stream} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        "No Other Users In The Room Yet!"
+      )}
     </div>
   );
 };
