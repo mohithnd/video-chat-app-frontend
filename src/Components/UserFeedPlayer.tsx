@@ -10,12 +10,14 @@ const UserFeedPlayer: React.FC<{ stream?: MediaStream }> = ({ stream }) => {
   }, [stream]);
 
   return (
-    <video
-      ref={videoRef}
-      style={{ width: "300px", height: "200px" }}
-      muted={true}
-      autoPlay
-    />
+    <div className="relative rounded-lg overflow-hidden shadow-lg w-80 h-60">
+      <video
+        ref={videoRef}
+        className="w-full h-full object-cover"
+        muted={true}
+        autoPlay
+      />
+    </div>
   );
 };
 

@@ -15,22 +15,25 @@ const Room: React.FC = () => {
   }, [id, user, socket]);
 
   return (
-    <div>
-      Room : {id}
-      <br />
-      Your Own User Feed
-      <UserFeedPlayer stream={stream} />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">
+      <h1 className="text-3xl font-bold mb-8">Room: {id}</h1>
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Your Feed</h2>
+        <UserFeedPlayer stream={stream} />
+      </div>
       {Object.keys(peers).length > 0 ? (
         <div>
-          Other Users Feed
-          {Object.keys(peers).map((peerId) => (
-            <div key={peerId}>
-              <UserFeedPlayer stream={peers[peerId].stream} />
-            </div>
-          ))}
+          <h2 className="text-xl font-semibold mb-4">Other's Feed</h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            {Object.keys(peers).map((peerId) => (
+              <div key={peerId}>
+                <UserFeedPlayer stream={peers[peerId].stream} />
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
-        "No Other Users In The Room Yet!"
+        <p className="text-lg">No Other Users In The Room Yet!</p>
       )}
     </div>
   );
