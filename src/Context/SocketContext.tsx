@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Peer from "peerjs";
 import { v4 as UUIDv4 } from "uuid";
 import { peerReducer } from "../Reducers/peerReducer";
-import { addPeerAction } from "../Actions/peerAction";
+import { addPeerAction, removePeerAction } from "../Actions/peerAction";
 import serverConfig from "../config/serverConfig";
 
 const WS_Server = serverConfig.VITE_WS_SERVER;
@@ -79,6 +79,15 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
       call.on("stream", () => {
         dispatch(addPeerAction(peerId, stream));
       });
+    });
+
+    socket.on("user-disconnected", ({ peerId }) => {
+      dispatch(removePeerAction(peerId));
+
+      const videoElement = document.getElementById(peerId);
+      if (videoElement) {
+        videoElement.remove();
+      }
     });
 
     user.on("call", (call) => {
