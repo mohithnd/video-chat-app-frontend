@@ -23,6 +23,7 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
 
   const [user, setUser] = useState<Peer>();
   const [stream, setStream] = useState<MediaStream>();
+  const [messages, setMessages] = useState<string[]>([]);
 
   const [peers, dispatch] = useReducer(peerReducer, {});
 
@@ -65,6 +66,10 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
     socket.on("room-created", enterRoom);
 
     socket.on("get-users", fetchParticipantList);
+
+    socket.on("receive-message", ({ message }) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
   }, []);
 
   useEffect(() => {
@@ -102,8 +107,14 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
     socket.emit("ready");
   }, [user, stream]);
 
+  const sendMessage = (roomId: string, message: string) => {
+    socket.emit("send-message", { roomId, message });
+  };
+
   return (
-    <SocketContext.Provider value={{ socket, user, stream, peers }}>
+    <SocketContext.Provider
+      value={{ socket, user, stream, peers, messages, sendMessage }}
+    >
       {children}
     </SocketContext.Provider>
   );
