@@ -23,7 +23,9 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
 
   const [user, setUser] = useState<Peer>();
   const [stream, setStream] = useState<MediaStream>();
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<
+    { text: string; senderId: string }[]
+  >([]);
 
   const [peers, dispatch] = useReducer(peerReducer, {});
 
@@ -67,8 +69,11 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
 
     socket.on("get-users", fetchParticipantList);
 
-    socket.on("receive-message", ({ message }) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+    socket.on("receive-message", ({ message, senderId }) => {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: message, senderId },
+      ]);
     });
   }, []);
 
@@ -107,8 +112,8 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
     socket.emit("ready");
   }, [user, stream]);
 
-  const sendMessage = (roomId: string, message: string) => {
-    socket.emit("send-message", { roomId, message });
+  const sendMessage = (roomId: string, message: string, senderId: string) => {
+    socket.emit("send-message", { roomId, message, senderId });
   };
 
   return (
