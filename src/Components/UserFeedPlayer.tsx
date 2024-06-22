@@ -10,7 +10,7 @@ const UserFeedPlayer: React.FC<{ stream?: MediaStream }> = ({ stream }) => {
   }, [stream]);
 
   return (
-    <div className="relative rounded-lg overflow-hidden shadow-lg w-80 h-60">
+    <div className="rounded-lg overflow-hidden shadow-lg w-80 h-60 bg-gradient-to-br from-purple-400 to-purple-600">
       <video
         ref={videoRef}
         className="w-full h-full object-cover"

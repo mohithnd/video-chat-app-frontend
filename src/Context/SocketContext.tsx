@@ -6,6 +6,7 @@ import { v4 as UUIDv4 } from "uuid";
 import { peerReducer } from "../Reducers/peerReducer";
 import { addPeerAction, removePeerAction } from "../Actions/peerAction";
 import serverConfig from "../config/serverConfig";
+import IMessage from "../Types/IMessage";
 
 const WS_Server = serverConfig.VITE_WS_SERVER;
 
@@ -23,9 +24,7 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
 
   const [user, setUser] = useState<Peer>();
   const [stream, setStream] = useState<MediaStream>();
-  const [messages, setMessages] = useState<
-    { text: string; senderId: string }[]
-  >([]);
+  const [messages, setMessages] = useState<IMessage[]>([]);
 
   const [peers, dispatch] = useReducer(peerReducer, {});
 

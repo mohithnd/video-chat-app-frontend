@@ -5,16 +5,16 @@ const CreateRoom: React.FC = () => {
   const { socket } = useContext(SocketContext);
 
   const initRoom = () => {
-    console.log("Sending A Request To Create A Room");
+    console.log("Sending a request to create a room");
     socket.emit("create-room");
   };
 
   return (
     <button
       onClick={initRoom}
-      className="px-6 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 ease-in-out"
+      className="px-6 py-3 text-lg font-bold text-white bg-purple-600 rounded-lg shadow-lg hover:bg-purple-700 transition duration-300 ease-in-out border-2 border-purple-500"
     >
-      Start A New Meeting In A New Room
+      Start a New Meeting in a New Room
     </button>
   );
 };
