@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
-import { SocketContext } from "../Context/SocketContext";
 import { useParams } from "react-router-dom";
+
+import { SocketContext } from "../Context/SocketContext";
 import IMessage from "../Types/IMessage";
 
 const ChatArea: React.FC = () => {
@@ -32,7 +33,8 @@ const ChatArea: React.FC = () => {
                   : "bg-gray-200 text-black"
               }`}
             >
-              {msg.text}
+              <p className="text-sm text-gray-600 mb-1">{msg.timestamp} </p>
+              <p>{msg.text}</p>
             </div>
           </div>
         ))}

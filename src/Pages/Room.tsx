@@ -1,33 +1,20 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { SocketContext } from "../Context/SocketContext";
-import UserFeedPlayer from "../Components/UserFeedPlayer";
+
 import ChatArea from "../Components/ChatArea";
+import UserFeedPlayer from "../Components/UserFeedPlayer";
+import { SocketContext } from "../Context/SocketContext";
 
 const Room: React.FC = () => {
   const { id } = useParams();
   const { socket, user, stream, peers } = useContext(SocketContext);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user && id) {
       console.log("New User With ID", user._id, "has joined room", id);
       socket.emit("joined-room", { roomId: id, peerId: user._id });
-      setLoading(false);
     }
   }, [id, user, socket]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!id) {
-    return <div>Error: Room ID is missing</div>;
-  }
-
-  if (!user) {
-    return <div>Error: User is not defined</div>;
-  }
 
   return (
     <div className="flex flex-row items-start justify-center min-h-screen bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600">

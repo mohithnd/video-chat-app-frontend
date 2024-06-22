@@ -1,12 +1,14 @@
-import SocketIoClient from "socket.io-client";
+import Peer from "peerjs";
 import { createContext, useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Peer from "peerjs";
+import SocketIoClient from "socket.io-client";
 import { v4 as UUIDv4 } from "uuid";
-import { peerReducer } from "../Reducers/peerReducer";
+
 import { addPeerAction, removePeerAction } from "../Actions/peerAction";
 import serverConfig from "../config/serverConfig";
+import { peerReducer } from "../Reducers/peerReducer";
 import IMessage from "../Types/IMessage";
+import IProps from "../Types/IProps";
 
 const WS_Server = serverConfig.VITE_WS_SERVER;
 
@@ -15,17 +17,11 @@ export const SocketContext = createContext<any | null>(null);
 
 const socket = SocketIoClient(WS_Server);
 
-interface Props {
-  children: React.ReactNode;
-}
-
-export const SocketProvider: React.FC<Props> = ({ children }) => {
+export const SocketProvider: React.FC<IProps> = ({ children }) => {
   const navigate = useNavigate();
-
   const [user, setUser] = useState<Peer>();
   const [stream, setStream] = useState<MediaStream>();
   const [messages, setMessages] = useState<IMessage[]>([]);
-
   const [peers, dispatch] = useReducer(peerReducer, {});
 
   const fetchParticipantList = ({
@@ -44,7 +40,6 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
       video: true,
       audio: true,
     });
-
     setStream(stream);
   };
 
@@ -57,7 +52,6 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
     });
 
     setUser(newPeer);
-
     fetchUserFeed();
 
     const enterRoom = ({ roomId }: { roomId: string }) => {
@@ -65,13 +59,11 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
     };
 
     socket.on("room-created", enterRoom);
-
     socket.on("get-users", fetchParticipantList);
-
-    socket.on("receive-message", ({ message, senderId }) => {
+    socket.on("receive-message", ({ message, senderId, timestamp }) => {
       setMessages((prevMessages) => [
         ...prevMessages,
-        { text: message, senderId },
+        { text: message, senderId, timestamp },
       ]);
     });
   }, []);
@@ -112,7 +104,8 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
   }, [user, stream]);
 
   const sendMessage = (roomId: string, message: string, senderId: string) => {
-    socket.emit("send-message", { roomId, message, senderId });
+    const timestamp = new Date().toLocaleTimeString();
+    socket.emit("send-message", { roomId, message, senderId, timestamp });
   };
 
   return (
