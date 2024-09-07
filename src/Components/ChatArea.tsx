@@ -19,9 +19,9 @@ const ChatArea: React.FC = () => {
     <div className="w-full max-w-md">
       <h2 className="text-3xl font-bold mb-4 text-purple-800">Chat</h2>
       <div className="bg-white p-4 rounded-lg shadow-lg h-96 overflow-y-auto border border-purple-300">
-        {messages.map((msg: IMessage, index: number) => (
+        {messages.map((msg: IMessage) => (
           <div
-            key={index}
+            key={msg.messageId}
             className={`flex mb-2 ${
               msg.senderId === user._id ? "justify-end" : "justify-start"
             }`}

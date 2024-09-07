@@ -1,5 +1,5 @@
 import Peer from "peerjs";
-import { createContext, useEffect, useReducer, useState } from "react";
+import { createContext, useEffect, useMemo, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SocketIoClient from "socket.io-client";
 import { v4 as UUIDv4 } from "uuid";
@@ -60,12 +60,16 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
 
     socket.on("room-created", enterRoom);
     socket.on("get-users", fetchParticipantList);
-    socket.on("receive-message", ({ message, senderId, timestamp }) => {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: message, senderId, timestamp },
-      ]);
-    });
+    socket.on(
+      "receive-message",
+      ({ message, senderId, timestamp, messageId }) => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: message, senderId, timestamp, messageId },
+        ]);
+      }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -108,11 +112,12 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
     socket.emit("send-message", { roomId, message, senderId, timestamp });
   };
 
+  const value = useMemo(
+    () => ({ socket, user, stream, peers, messages, sendMessage }),
+    [user, stream, peers, messages]
+  );
+
   return (
-    <SocketContext.Provider
-      value={{ socket, user, stream, peers, messages, sendMessage }}
-    >
-      {children}
-    </SocketContext.Provider>
+    <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
   );
 };
