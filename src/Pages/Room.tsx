@@ -13,6 +13,7 @@ const Room: React.FC = () => {
     if (user && id) {
       console.log("New User With ID", user._id, "has joined room", id);
       socket.emit("joined-room", { roomId: id, peerId: user._id });
+      socket.emit("send-chats", { roomId: id });
     }
   }, [id, user, socket]);
 

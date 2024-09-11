@@ -64,6 +64,9 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
         ]);
       }
     );
+    socket.on("receive-chats", ({ chats }: { chats: IMessage[] }) => {
+      setMessages(chats);
+    });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
