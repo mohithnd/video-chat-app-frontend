@@ -10,7 +10,9 @@ const ChatArea: React.FC = () => {
   const { id } = useParams();
 
   const handleSendMessage = () => {
-    if (!chat) return;
+    if (!chat || !user) {
+      return;
+    }
     sendMessage(id, chat, user._id);
     setChat("");
   };

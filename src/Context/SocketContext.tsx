@@ -43,21 +43,16 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
     setStream(stream);
   };
 
+  const sendMessage = (roomId: string, message: string, senderId: string) => {
+    const timestamp = new Date().toLocaleTimeString();
+    socket.emit("send-message", { roomId, message, senderId, timestamp });
+  };
+
+  const enterRoom = ({ roomId }: { roomId: string }) => {
+    navigate(`/room/${roomId}`);
+  };
+
   useEffect(() => {
-    const userId = UUIDv4();
-    const newPeer = new Peer(userId, {
-      host: serverConfig.VITE_PEER_SERVER_HOST,
-      port: serverConfig.VITE_PEER_SERVER_PORT,
-      path: serverConfig.VITE_PEER_SERVER_PATH,
-    });
-
-    setUser(newPeer);
-    fetchUserFeed();
-
-    const enterRoom = ({ roomId }: { roomId: string }) => {
-      navigate(`/room/${roomId}`);
-    };
-
     socket.on("room-created", enterRoom);
     socket.on("get-users", fetchParticipantList);
     socket.on(
@@ -69,7 +64,20 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
         ]);
       }
     );
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const userId = UUIDv4();
+    const newPeer = new Peer(userId, {
+      host: serverConfig.VITE_PEER_SERVER_HOST,
+      port: serverConfig.VITE_PEER_SERVER_PORT,
+      path: serverConfig.VITE_PEER_SERVER_PATH,
+    });
+
+    setUser(newPeer);
+    fetchUserFeed();
   }, []);
 
   useEffect(() => {
@@ -77,43 +85,45 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
       return;
     }
 
-    socket.on("user-joined", ({ peerId }) => {
+    const handleUserJoined = ({ peerId }: { peerId: string }) => {
       const call = user.call(peerId, stream);
       console.log("Calling The Peer", peerId);
 
       call.on("stream", () => {
         dispatch(addPeerAction(peerId, stream));
       });
-    });
+    };
 
-    socket.on("user-disconnected", ({ peerId }) => {
+    const handleUserDisconnected = ({ peerId }: { peerId: string }) => {
       dispatch(removePeerAction(peerId));
-
       const videoElement = document.getElementById(peerId);
       if (videoElement) {
         videoElement.remove();
       }
-    });
+    };
 
     user.on("call", (call) => {
       console.log("Receiving A Call", call.peer);
       call.answer(stream);
-
       call.on("stream", () => {
         dispatch(addPeerAction(call.peer, stream));
       });
     });
 
+    socket.on("user-joined", handleUserJoined);
+    socket.on("user-disconnected", handleUserDisconnected);
     socket.emit("ready");
   }, [user, stream]);
 
-  const sendMessage = (roomId: string, message: string, senderId: string) => {
-    const timestamp = new Date().toLocaleTimeString();
-    socket.emit("send-message", { roomId, message, senderId, timestamp });
-  };
-
   const value = useMemo(
-    () => ({ socket, user, stream, peers, messages, sendMessage }),
+    () => ({
+      socket,
+      user,
+      stream,
+      peers,
+      messages,
+      sendMessage,
+    }),
     [user, stream, peers, messages]
   );
 
