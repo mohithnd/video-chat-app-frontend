@@ -6,6 +6,7 @@ const UserFeedPlayer: React.FC<{ stream?: MediaStream }> = ({ stream }) => {
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
+      console.log("Stream set for video element.");
     }
   }, [stream]);
 

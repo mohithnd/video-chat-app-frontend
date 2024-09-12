@@ -11,9 +11,11 @@ const Room: React.FC = () => {
 
   useEffect(() => {
     if (user && id) {
-      console.log("New User With ID", user._id, "has joined room", id);
+      console.log("User with ID:", user._id, "has joined room:", id);
       socket.emit("joined-room", { roomId: id, peerId: user._id });
       socket.emit("send-chats", { roomId: id });
+    } else {
+      console.warn("User or room ID is not defined.");
     }
   }, [id, user, socket]);
 

@@ -11,8 +11,14 @@ const ChatArea: React.FC = () => {
 
   const handleSendMessage = () => {
     if (!chat || !user) {
+      console.warn("Chat input is empty or user is not defined.");
       return;
     }
+    console.log("Sending message:", {
+      roomId: id,
+      message: chat,
+      senderId: user._id,
+    });
     sendMessage(id, chat, user._id);
     setChat("");
   };

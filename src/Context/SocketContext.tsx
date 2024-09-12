@@ -31,24 +31,30 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
     roomId: string;
     participants: string[];
   }) => {
-    console.log("Fetched Room Participants");
-    console.log(roomId, participants);
+    console.log("Fetching Room Participants:", { roomId, participants });
   };
 
   const fetchUserFeed = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
-    setStream(stream);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      setStream(stream);
+      console.log("User media stream fetched successfully.");
+    } catch (error) {
+      console.error("Error fetching user media:", error);
+    }
   };
 
   const sendMessage = (roomId: string, message: string, senderId: string) => {
     const timestamp = new Date().toLocaleTimeString();
+    console.log("Sending message:", { roomId, message, senderId, timestamp });
     socket.emit("send-message", { roomId, message, senderId, timestamp });
   };
 
   const enterRoom = ({ roomId }: { roomId: string }) => {
+    console.log("Entering room:", roomId);
     navigate(`/room/${roomId}`);
   };
 
@@ -58,6 +64,12 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
     socket.on(
       "receive-message",
       ({ message, senderId, timestamp, messageId }) => {
+        console.log("Message received:", {
+          message,
+          senderId,
+          timestamp,
+          messageId,
+        });
         setMessages((prevMessages) => [
           ...prevMessages,
           { text: message, senderId, timestamp, messageId },
@@ -65,8 +77,16 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
       }
     );
     socket.on("receive-chats", ({ chats }: { chats: IMessage[] }) => {
+      console.log("Chats received:", chats);
       setMessages(chats);
     });
+
+    return () => {
+      socket.off("room-created", enterRoom);
+      socket.off("get-users", fetchParticipantList);
+      socket.off("receive-message");
+      socket.off("receive-chats");
+    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -81,35 +101,42 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
 
     setUser(newPeer);
     fetchUserFeed();
+    console.log("New peer created with ID:", userId);
   }, []);
 
   useEffect(() => {
     if (!user || !stream) {
+      console.log(
+        "User or stream not available, skipping peer connection setup."
+      );
       return;
     }
 
     const handleUserJoined = ({ peerId }: { peerId: string }) => {
+      console.log("User joined:", peerId);
       const call = user.call(peerId, stream);
-      console.log("Calling The Peer", peerId);
-
       call.on("stream", () => {
         dispatch(addPeerAction(peerId, stream));
+        console.log("Stream added for peer:", peerId);
       });
     };
 
     const handleUserDisconnected = ({ peerId }: { peerId: string }) => {
+      console.log("User disconnected:", peerId);
       dispatch(removePeerAction(peerId));
       const videoElement = document.getElementById(peerId);
       if (videoElement) {
         videoElement.remove();
+        console.log("Video element removed for peer:", peerId);
       }
     };
 
     user.on("call", (call) => {
-      console.log("Receiving A Call", call.peer);
+      console.log("Receiving a call from:", call.peer);
       call.answer(stream);
       call.on("stream", () => {
         dispatch(addPeerAction(call.peer, stream));
+        console.log("Stream added for incoming call from peer:", call.peer);
       });
     });
 
