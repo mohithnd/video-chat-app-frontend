@@ -3,12 +3,11 @@ import { createContext, useEffect, useMemo, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SocketIoClient from "socket.io-client";
 import { v4 as UUIDv4 } from "uuid";
-
-import { addPeerAction, removePeerAction } from "../Actions/peerAction";
-import serverConfig from "../config/serverConfig";
-import { peerReducer } from "../Reducers/peerReducer";
-import IMessage from "../Types/IMessage";
-import IProps from "../Types/IProps";
+import { addPeerAction, removePeerAction } from "../actions/peerAction";
+import serverConfig from "../configs/serverConfig";
+import { peerReducer } from "../reducers/peerReducer";
+import IMessage from "../types/IMessage";
+import IProps from "../types/IProps";
 
 const WS_Server = serverConfig.VITE_WS_SERVER;
 
@@ -87,8 +86,6 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
       socket.off("receive-message");
       socket.off("receive-chats");
     };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import CreateRoom from "../Components/CreateRoom";
+import CreateRoom from "../components/CreateRoom";
 
 const Home: React.FC = () => {
   console.log("Rendering Home Page");

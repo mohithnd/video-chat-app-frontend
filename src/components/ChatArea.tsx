@@ -1,8 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
-
-import { SocketContext } from "../Context/SocketContext";
-import IMessage from "../Types/IMessage";
+import { SocketContext } from "../contexts/SocketContext";
+import IMessage from "../types/IMessage";
 
 const ChatArea: React.FC = () => {
   const [chat, setChat] = useState("");

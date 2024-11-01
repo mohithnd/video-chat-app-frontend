@@ -1,9 +1,8 @@
 import { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
-
-import ChatArea from "../Components/ChatArea";
-import UserFeedPlayer from "../Components/UserFeedPlayer";
-import { SocketContext } from "../Context/SocketContext";
+import ChatArea from "../components/ChatArea";
+import UserFeedPlayer from "../components/UserFeedPlayer";
+import { SocketContext } from "../contexts/SocketContext";
 
 const Room: React.FC = () => {
   const { id } = useParams();
