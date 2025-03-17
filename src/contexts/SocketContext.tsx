@@ -92,6 +92,7 @@ export const SocketProvider: React.FC<IProps> = ({ children }) => {
     const userId = UUIDv4();
     const newPeer = new Peer(userId, {
       host: serverConfig.VITE_PEER_SERVER_HOST,
+      port: serverConfig.VITE_PEER_SERVER_PORT,
       path: serverConfig.VITE_PEER_SERVER_PATH,
     });
 
